@@ -12,7 +12,7 @@ const schema = new mongoose.Schema(
         Email: {
             type: String,
             required: true,
-            match: [/^[a-zA-Z._]+@[a-zA-Z._-]+\.[a-zA-Z._-]+$/, 'Invalid email format']
+            match: [/^[a-zA-Z1-9._]+@[a-zA-Z._-]+\.[a-zA-Z._-]+$/, 'Invalid email format']
         },
         Password: {
             type: String,
