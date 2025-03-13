@@ -35,6 +35,10 @@ schema.pre('save', async function (next) {
     next();
 });
 
+schema.set('toJSON', {
+    transform: (_doc, { Password, __v, ...rest }, options) => rest
+});
+
 const User = mongoose.model('Users', schema);
 
 module.exports = User;
