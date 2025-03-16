@@ -4,10 +4,13 @@ const dotenv = require('dotenv');
 const router = require('./routes/index.route');
 
 dotenv.config();
+
 const app = express();
 mongoose.connect(process.env.DATABASE_URI);
 
 app.use(express.json());
+
+app.use('/profile-picture', express.static('uploads'));
 app.use(router);
 
 mongoose.connection.on('connected', () => {
