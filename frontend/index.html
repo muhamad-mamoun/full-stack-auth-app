@@ -14,29 +14,32 @@
             <h1>Connect to the world</h1>
             <p>Free and Easy</p>
         </section>
-        <section class="register-side">
+        <section class="register-side hidden">
             <div class="form-title">Register</div>
             <form class="register-form" action="#" method="POST">
+                <div class="error-message hidden"></div>
                 <div class="input-group">
-                    <input placeholder="" type="text" name="FullName" id="full-name" required spellcheck="false"
-                        autocomplete="off">
-                    <label for="full-name">Full Name</label>
+                    <input placeholder="" type="text" name="FullName" class="validate" id="register-full-name" required
+                        spellcheck="false" autocomplete="off">
+                    <label for="register-full-name">Full Name</label>
                 </div>
                 <div class="input-group">
-                    <input placeholder="" type="email" name="email" id="email" required spellcheck="false"
-                        autocomplete="off">
-                    <label for="email">Email</label>
+                    <input placeholder="" type="email" name="Email" class="validate" id="register-email" required
+                        spellcheck="false" autocomplete="off">
+                    <label for="register-email">Email</label>
                 </div>
                 <div class="input-group">
-                    <input placeholder="" type="password" name="password" id="password" required>
-                    <label for="password">Password</label>
+                    <input placeholder="" type="password" name="Password" class="validate" id="register-password"
+                        required>
+                    <label for="register-password">Password</label>
                 </div>
                 <div class="input-group" id="upload-image">
-                    <input type="file" accept="image/*" name="ProfilePicture" id="profile-picture" required>
-                    <label for="profile-picture" class="file-label">Upload Profile Picture<img
-                            src="./assets/upload.svg" /></label>
+                    <input type="file" accept="image/*" name="ProfilePicture" class="validate" id="profile-picture">
+                    <label for="profile-picture" class="file-label">
+                        <p>Upload Profile Picture</p><img src="./assets/upload.svg" />
+                    </label>
                 </div>
-                <button class="submit-button" type="submit">Register</button></div>
+                <button class="submit-button register-button" type="submit">Register</button></div>
             </form>
             <div class="second-option">
                 <div class="second-option-title">Already have an account?</div>
@@ -46,16 +49,24 @@
         <section class="login-side">
             <div class="form-title">Login</div>
             <form class="login-form" action="#" method="POST">
+                <div class="error-message"></div>
                 <div class="input-group">
-                    <input placeholder="" type="email" name="email" id="email" required spellcheck="false"
-                        autocomplete="off">
-                    <label for="email">Email</label>
+                    <input placeholder="" type="email" name="Email" class="validate" id="login-email" required
+                        spellcheck="false" autocomplete="off">
+                    <label for="login-email">Email</label>
                 </div>
                 <div class="input-group">
-                    <input placeholder="" type="password" name="password" id="password" required>
-                    <label for="password">Password</label>
+                    <input placeholder="" type="password" name="Password" id="login-password" required>
+                    <label for="login-password">Password</label>
                 </div>
-                <button class="submit-button" type="submit">Login</button></div>
+                <div class="login-helpers">
+                    <div>
+                        <input placeholder="" type="checkbox" name="RememberMe" id="remember-me">
+                        <label for="remember-me">Remember me</label>
+                    </div>
+                    <p><a href="#">Forget password?</a></p>
+                </div>
+                <button class="submit-button login-button" type="submit">Login</button></div>
             </form>
             <div class="second-option">
                 <div class="second-option-title">Don't have an account?</div>
