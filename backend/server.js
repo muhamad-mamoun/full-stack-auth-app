@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const router = require('./routes/index.route');
 
 dotenv.config();
@@ -8,6 +9,7 @@ dotenv.config();
 const app = express();
 mongoose.connect(process.env.DATABASE_URI);
 
+app.use(cors());
 app.use(express.json());
 
 app.use('/profile-picture', express.static('uploads'));
