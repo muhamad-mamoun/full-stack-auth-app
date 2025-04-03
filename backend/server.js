@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 mongoose.connect(process.env.DATABASE_URI);
 
-app.use(cors());
+app.use(cors({ origin: 'http://127.0.0.1', credentials: true }));
 app.use(express.json());
 
 app.use('/profile-picture', express.static('uploads'));
