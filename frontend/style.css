@@ -47,6 +47,7 @@ body {
 
     background: var(--primary-dark-bg-color);
     box-shadow: rgba(0, 0, 0, 0.44) 0px 3px 8px;
+    transition: all 0.4s ease-in-out;
 }
 
 .image-side {
@@ -259,4 +260,35 @@ body {
 
 .second-option-title {
     margin-bottom: 10px;
+}
+
+.popup-container {
+    opacity: 0;
+    width: fit-content;
+    height: fit-content;
+    padding: 10px 50px;
+    border-radius: 8px;
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    column-gap: 10px;
+
+    font-size: 1.2em;
+    font-weight: 600;
+    letter-spacing: 1px;
+    background-color: var(--secondary-light-bg-color);
+    backdrop-filter: blur(10px);
+    transition: opacity 0.4s ease-in-out;
+    z-index: 1000;
+    position: absolute;
+
+    transition: opacity 0.4s ease-in-out;
+}
+
+.popup-container img {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    place-items: center;
 }

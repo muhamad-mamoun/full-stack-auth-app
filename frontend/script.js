@@ -1,5 +1,18 @@
+const container = document.querySelector('.container');
+const switchButtons = document.querySelectorAll('.switch-button');
+const loginSide = document.querySelector('.login-side');
+const loginForm = document.querySelector('.login-form');
+const registerSide = document.querySelector('.register-side');
+const registerForm = document.querySelector('.register-form');
+const uploadImage = document.getElementById('profile-picture');
+const passwordInput = document.getElementById('login-password');
+const passwordVisibilty = document.querySelector('.password-visibily');
+const errorMessageElement = document.querySelector('.error-message');
+const popupContainer = document.querySelector('.popup-container');
+const popupMessage = document.querySelector('.popup-message');
+const popupIcon = document.querySelector('.popup-icon>img');
 const requestHandlers = [loginRequest, registerRequest];
-
+let currentPasswordVisibilty = 0;
 const validationRules = {
     FullName: {
         regex: /^.{3,}$/,
@@ -14,72 +27,45 @@ const validationRules = {
         message: '* Password must be at least 8 characters.'
     },
     ProfilePicture: {
-        regex: /.+\.(jpg|jpeg|png)/,
+        regex: /\.(jpg|jpeg|png)$/,
         message: 'Invalid picture format (allowed jpg, jpeg, or png).'
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const switchButtons = document.querySelectorAll('.switch-button');
-    const loginSide = document.querySelector('.login-side');
-    const registerSide = document.querySelector('.register-side');
-    const uploadImage = document.getElementById('profile-picture');
-    const errorMessageElement = document.querySelector('.error-message');
+loginForm.Email.value = localStorage.getItem('full-stack-auth-app-rememberedEmail') ?? '';
 
-    switchButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            loginSide.classList.toggle('shifted-right');
-            registerSide.classList.toggle('shifted-right');
-        });
-    });
-
-    [loginSide, registerSide].forEach((side) => {
-        side.querySelectorAll('form .validate').forEach((inputField) => {
-            inputField.addEventListener('change', () => {
-                const validationResult = validateInputField(inputField);
-                applyValidationClass(inputField, validationResult);
-            });
-        });
-    });
-
-    uploadImage.addEventListener('change', () => {
-        const fileNameElement = document.querySelector('.file-label p');
-        const inputFieldLabel = document.querySelector('.file-label');
-        fileNameElement.textContent = uploadImage.value.split('\\')[2];
-        const validationResult = validateInputField(uploadImage);
-        applyValidationClass(inputFieldLabel, validationResult);
-    });
-
-    [loginSide, registerSide].forEach((side, formIndex) => {
-        side.querySelector('form').addEventListener('submit', (event) => {
-            event.preventDefault();
-            let formValidationResult = true;
-            let errorMessage = '';
-
-            side.querySelectorAll('.validate').forEach((inputField) => {
-                if (!validateInputField(inputField) && formValidationResult === true) {
-                    errorMessage = validationRules[inputField.name].message;
-                    formValidationResult = false;
-                }
-            });
-
-            if (formValidationResult === false) {
-                errorMessageElement.textContent = errorMessage;
-                errorMessageElement.classList.remove('hidden');
-                formValidationResult = true;
-            }
-            else {
-                errorMessageElement.textContent = '';
-                requestHandlers[formIndex]();
-                // window.location.href = '/dashboard';
-            }
-        });
+switchButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        loginSide.classList.toggle('shifted-right');
+        registerSide.classList.toggle('shifted-right');
     });
 });
 
-function validateInputField(inputField) {
-    const regex = validationRules[inputField.name].regex;
-    return regex.test(inputField.value);
+passwordVisibilty.addEventListener('click', () => {
+    const visibily = [{ inputType: 'password', imgPath: 'assets/invisible.png' }, { inputType: 'text', imgPath: 'assets/visible.png' }];
+    currentPasswordVisibilty ^= 1;
+
+    passwordVisibilty.setAttribute('src', visibily[currentPasswordVisibilty].imgPath);
+    passwordInput.setAttribute('type', visibily[currentPasswordVisibilty].inputType);
+});
+
+document.querySelectorAll('.validate').forEach((inputField) => {
+    inputField.addEventListener('change', () => {
+        const validationResult = validateInput(inputField.value, validationRules[inputField.name].regex);
+        applyValidationClass(inputField, validationResult);
+    });
+});
+
+uploadImage.addEventListener('change', () => {
+    const fileNameElement = document.querySelector('.file-label p');
+    const inputFieldLabel = document.querySelector('.file-label');
+    fileNameElement.textContent = uploadImage.value.split('\\')[2] || 'Upload Profile Picture';;
+    const validationResult = validateInput(fileNameElement.textContent, validationRules['ProfilePicture'].regex);
+    applyValidationClass(inputFieldLabel, validationResult);
+});
+
+function validateInput(value, regex) {
+    return regex.test(value);
 }
 
 function applyValidationClass(element, result) {
@@ -92,32 +78,84 @@ function applyValidationClass(element, result) {
     }
 }
 
-function loginRequest() {
-    const loginForm = document.querySelector('.login-form');
+[loginForm, registerForm].forEach((form, formIndex) => {
+    form.addEventListener('submit', async (submitEvent) => {
+        submitEvent.preventDefault();
+
+        let validationResult = true;
+        let errorMessage = '';
+
+        form.querySelectorAll('.validate').forEach((inputField) => {
+            const inputValidationResult = validateInput(inputField.value, validationRules[inputField.name].regex);
+
+            if (validationResult && !inputValidationResult) {
+                errorMessage = validationRules[inputField.name].message;
+                validationResult = false;
+            }
+        });
+
+        if (!validationResult) {
+            errorMessageElement.textContent = errorMessage;
+            errorMessageElement.classList.remove('hidden');
+        } else {
+            errorMessageElement.classList.add('hidden');
+            errorMessageElement.textContent = '';
+            popupMessage.textContent = 'Processing...';
+            popupIcon.setAttribute('src', 'assets/hourglass.png');
+            popupContainer.style.opacity = '1';
+            container.style.filter = 'blur(4px)';
+
+            const responseBody = await requestHandlers[formIndex]();
+
+            popupMessage.textContent = responseBody.message ?? 'No Response';
+            setTimeout(() => { popupContainer.style.opacity = '0'; container.style.filter = 'blur(0px)' }, 1200);
+
+            if (responseBody.status === 'Success') {
+                if (loginForm.RememberMe.checked) localStorage.setItem('full-stack-auth-app-rememberedEmail', loginForm.Email.value);
+                popupIcon.setAttribute('src', 'assets/success.png');
+                setTimeout(() => window.location.href = 'home.html', 1200);
+
+            } else if ((responseBody.status === 'Failed') || (responseBody.status === 'Refused')) {
+                popupIcon.setAttribute('src', './assets/fail.png');
+            } else {
+                popupIcon.setAttribute('src', './assets/unknown.png');
+            }
+        }
+    });
+});
+
+async function loginRequest() {
     const formData = new FormData(loginForm);
 
-    fetch('http://127.0.0.1:3000/api/v1/auth/login', {
-        method: 'POST',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            Email: formData.get('Email'),
-            Password: formData.get('Password')
-        }),
-    })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => alert(`Error: ${error}`));
+    try {
+        const response = await fetch('http://127.0.0.1:3000/api/v1/auth/login', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                Email: formData.get('Email'),
+                Password: formData.get('Password')
+            }),
+        });
+
+        const data = await response.json();
+        return data;
+
+    } catch (error) { alert(`Error: ${error}`) }
 }
 
 async function registerRequest() {
-    const registerForm = document.querySelector('.register-form');
     const formData = new FormData(registerForm);
 
-    fetch('http://127.0.0.1:3000/api/v1/auth/register', {
-        method: 'POST',
-        body: formData,
-    })
-        .then(response => JSON.parse(response))
-        .then(data => console.dir(`Data: ${data}`))
-        .catch(error => alert(`Error: ${error}`));
+    try {
+        const response = await fetch('http://127.0.0.1:3000/api/v1/auth/register', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
+
+        const data = await response.json();
+        return data;
+
+    } catch (error) { alert(`Error: ${error}`) }
 }
