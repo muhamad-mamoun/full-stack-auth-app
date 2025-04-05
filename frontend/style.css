@@ -262,6 +262,15 @@ body {
     margin-bottom: 10px;
 }
 
+.password-visibily {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 88%;
+    top: 26%;
+    cursor: pointer;
+}
+
 .popup-container {
     opacity: 0;
     width: fit-content;
