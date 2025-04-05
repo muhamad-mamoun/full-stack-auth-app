@@ -10,7 +10,12 @@ dotenv.config();
 const app = express();
 mongoose.connect(process.env.DATABASE_URI);
 
-app.use(cors({ origin: 'http://127.0.0.1', credentials: true }));
+app.use(cors({
+    origin: (origin, callback) => {
+        (!origin || /^http:\/\/(127.0.0.1|localhost):{0,1}[0-9]*$/.test(origin)) ? callback(null, origin) : callback(new Error('Not allowed by CORS'));
+    }, credentials: true
+}));
+
 app.use(cookieParser());
 app.use(express.json());
 
