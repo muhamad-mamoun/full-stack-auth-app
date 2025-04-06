@@ -5,14 +5,14 @@ const loginForm = document.querySelector('.login-form');
 const registerSide = document.querySelector('.register-side');
 const registerForm = document.querySelector('.register-form');
 const uploadImage = document.getElementById('profile-picture');
-const passwordInput = document.getElementById('login-password');
-const passwordVisibilty = document.querySelector('.password-visibily');
+const passwordInputs = document.querySelectorAll('.password-input');
+const passwordVisibilty = document.querySelectorAll('.password-visibily');
 const errorMessageElement = document.querySelector('.error-message');
 const popupContainer = document.querySelector('.popup-container');
 const popupMessage = document.querySelector('.popup-message');
 const popupIcon = document.querySelector('.popup-icon>img');
 const requestHandlers = [loginRequest, registerRequest];
-let currentPasswordVisibilty = 0;
+let currentPasswordVisibilty = [0, 0];
 const validationRules = {
     FullName: {
         regex: /^.{3,}$/,
@@ -41,12 +41,14 @@ switchButtons.forEach((button) => {
     });
 });
 
-passwordVisibilty.addEventListener('click', () => {
-    const visibily = [{ inputType: 'password', imgPath: 'assets/invisible.png' }, { inputType: 'text', imgPath: 'assets/visible.png' }];
-    currentPasswordVisibilty ^= 1;
+passwordVisibilty.forEach((button, index) => {
+    button.addEventListener('click', () => {
+        const visibily = [{ inputType: 'password', imgPath: 'assets/invisible.png' }, { inputType: 'text', imgPath: 'assets/visible.png' }];
+        currentPasswordVisibilty[index] ^= 1;
 
-    passwordVisibilty.setAttribute('src', visibily[currentPasswordVisibilty].imgPath);
-    passwordInput.setAttribute('type', visibily[currentPasswordVisibilty].inputType);
+        button.setAttribute('src', visibily[currentPasswordVisibilty[index]].imgPath);
+        passwordInputs[index].setAttribute('type', visibily[currentPasswordVisibilty[index]].inputType);
+    });
 });
 
 document.querySelectorAll('.validate').forEach((inputField) => {
