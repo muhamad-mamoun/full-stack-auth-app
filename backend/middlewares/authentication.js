@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
+const logger = require('../utils/logger');
 
 const verifyToken = (req, res, next) => {
     try {
         const token = req.cookies.Token;
 
         if (!token) {
+            logger.info('Unauthorized Access: No token provided');
             return res.status(401).json({ status: 'Failed', message: 'Unauthorized: No token provided', data: '' });
         }
 
@@ -13,8 +15,8 @@ const verifyToken = (req, res, next) => {
         next();
 
     } catch (error) {
-        res.status(401).json({ status: 'Failed', message: 'Unauthorized: Invalid or expired token', data: '' });
-        console.error(error);
+        logger.info('Unauthorized Access: Invalid or expired token');
+        return res.status(401).json({ status: 'Failed', message: 'Unauthorized: Invalid or expired token', data: '' });
     }
 }
 

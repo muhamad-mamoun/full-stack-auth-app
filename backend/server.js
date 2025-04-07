@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const logRequest = require('./middlewares/logger');
 
 dotenv.config();
 const router = require('./routes/index.route');
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/profile-picture', express.static('uploads'));
+app.use(logRequest);
 app.use(router);
 
 mongoose.connection.on('connected', () => {

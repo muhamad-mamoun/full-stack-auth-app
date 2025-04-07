@@ -1,6 +1,7 @@
 const User = require('../models/auth.model');
 const generateToken = require('../utils/token');
 const mailService = require('../services/mail.service');
+const logger = require('../utils/logger');
 
 const register = async (req, res) => {
     try {
@@ -12,6 +13,7 @@ const register = async (req, res) => {
         }
 
         const newUser = await User.create({ FullName, Email, Password, ProfilePicture });
+        logger.info(`User registered successfully [Name: ${newUser.FullName}, Email: ${newUser.Email}]`);
 
         generateToken(newUser._id, res);
         res.status(201).json({ status: 'Success', message: 'User created successfully', data: newUser });
@@ -24,8 +26,8 @@ const register = async (req, res) => {
         );
 
     } catch (error) {
-        res.status(500).json({ status: 'Failed', message: 'Internal Server Error', data: '' });
-        console.error(error);
+        logger.error(error.message);
+        return res.status(500).json({ status: 'Failed', message: 'Internal Server Error', data: '' });
     }
 }
 
@@ -47,8 +49,8 @@ const login = async (req, res) => {
         res.status(200).json({ status: 'Success', message: 'User logged in successfully', data: user });
 
     } catch (error) {
-        res.status(500).json({ status: 'Failed', message: 'Internal Server Error', data: '' });
-        console.error(error);
+        logger.error(error.message);
+        return res.status(500).json({ status: 'Failed', message: 'Internal Server Error', data: '' });
     }
 }
 
