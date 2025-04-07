@@ -1,5 +1,6 @@
 const User = require('../models/auth.model');
 const generateToken = require('../utils/token');
+const mailService = require('../services/mail.service');
 
 const register = async (req, res) => {
     try {
@@ -14,6 +15,13 @@ const register = async (req, res) => {
 
         generateToken(newUser._id, res);
         res.status(201).json({ status: 'Success', message: 'User created successfully', data: newUser });
+
+        mailService.sendMail(
+            newUser.Email,
+            'Welcome to Our Platform',
+            `<p>Hi <strong>${newUser.FullName}</strong>,
+            </p><p>Thank you for registering with us! We're excited to have you on board.</p>`
+        );
 
     } catch (error) {
         res.status(500).json({ status: 'Failed', message: 'Internal Server Error', data: '' });
