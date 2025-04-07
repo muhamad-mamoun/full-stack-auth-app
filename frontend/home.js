@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     const body = await respose.json();
-    console.log(body);
 
     document.querySelector('.user-name').textContent = body.data.FullName;
     document.querySelector('.user-info').textContent = body.data.Email;
